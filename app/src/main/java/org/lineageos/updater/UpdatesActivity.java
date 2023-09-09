@@ -76,6 +76,7 @@ import org.lineageos.updater.misc.StringGenerator;
 import org.lineageos.updater.misc.Utils;
 import org.lineageos.updater.model.Update;
 import org.lineageos.updater.model.UpdateInfo;
+import org.lineageos.updater.model.UpdateStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -372,12 +373,16 @@ public class UpdatesActivity extends UpdatesListActivity implements UpdateImport
         Log.d(TAG, "Adding remote updates");
         UpdaterController controller = mUpdaterService.getUpdaterController();
         boolean newUpdates = false;
+        boolean hasDownloadableUpdate = false;
 
         List<UpdateInfo> updates = Utils.parseJson(jsonFile, true);
         List<String> updatesOnline = new ArrayList<>();
         for (UpdateInfo update : updates) {
             newUpdates |= controller.addUpdate(update);
             updatesOnline.add(update.getDownloadId());
+            if(update.getStatus() != UpdateStatus.INSTALLED){
+                break;
+            }
         }
         controller.setUpdatesAvailableOnline(updatesOnline, true);
 
